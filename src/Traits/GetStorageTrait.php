@@ -28,12 +28,11 @@ trait GetStorageTrait
      * Gets the instance of a storage class by name.
      *
      * @param string $name Storage name.
-     * @return \League\OAuth2\Server\Storage\AbstractStorage
      * @throws \Cake\Core\Exception\Exception
      */
     protected function _getStorage($name)
     {
-        $config = $this->config('storages.' . $name);
+        $config = $this->getConfig('storages.' . $name);
 
         if (empty($config)) {
             throw new Exception(sprintf('Storage class "%s" has no configuration', $name));

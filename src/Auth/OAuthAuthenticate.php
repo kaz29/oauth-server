@@ -7,10 +7,10 @@ use Cake\Core\App;
 use Cake\Database\Exception;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
-use Cake\Network\Exception\BadRequestException;
-use Cake\Network\Exception\HttpException;
-use Cake\Network\Request;
-use Cake\Network\Response;
+use Cake\Http\Exception\BadRequestException;
+use Cake\Http\Exception\HttpException;
+use Cake\Http\ServerRequest;
+use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
 use League\OAuth2\Server\Exception\OAuthException;
 use OAuthServer\Traits\GetStorageTrait;
@@ -64,13 +64,13 @@ class OAuthAuthenticate extends BaseAuthenticate
     {
         parent::__construct($registry, $config);
 
-        if ($this->config('server')) {
-            $this->Server = $this->config('server');
+        if ($this->getConfig('server')) {
+            $this->Server = $this->getConfig('server');
 
             return;
         }
 
-        $serverConfig = $this->config('resourceServer');
+        $serverConfig = $this->getConfig('resourceServer');
         $serverClassName = App::className($serverConfig['className']);
 
         if (!$serverClassName) {
@@ -94,7 +94,7 @@ class OAuthAuthenticate extends BaseAuthenticate
      * @param \Cake\Network\Response $response A response object that can have headers added.
      * @return bool
      */
-    public function authenticate(Request $request, Response $response)
+    public function authenticate(ServerRequest $request, Response $response)
     {
         return $this->getUser($request);
     }
@@ -104,7 +104,7 @@ class OAuthAuthenticate extends BaseAuthenticate
      * @param \Cake\Network\Response $response A response object that can have headers added.
      * @return bool|\Cake\Network\Response
      */
-    public function unauthenticated(Request $request, Response $response)
+    public function unauthenticated(ServerRequest $request, Response $response)
     {
         if ($this->_config['continue']) {
             return false;
@@ -122,10 +122,10 @@ class OAuthAuthenticate extends BaseAuthenticate
      * @param \Cake\Network\Request $request Request object
      * @return array|bool|mixed
      */
-    public function getUser(Request $request)
+    public function getUser(ServerRequest $request)
     {
         try {
-            $this->Server->isValidRequest(true, $request->query('access_token'));
+            $this->Server->isValidRequest(true, $request->getQuery('access_token'));
         } catch (OAuthException $e) {
             $this->_exception = $e;
 

@@ -4,8 +4,8 @@ namespace OAuthServer\Controller;
 use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
+use Cake\Http\Exception\HttpException;
 use Cake\I18n\Time;
-use Cake\Network\Exception\HttpException;
 use Cake\Network\Response;
 use Cake\ORM\Query;
 use League\OAuth2\Server\Exception\AccessDeniedException;
@@ -52,7 +52,7 @@ class OAuthController extends AppController
         $this->Auth->allow(['oauth', 'accessToken']);
         $this->Auth->deny(['authorize']);
 
-        if ($this->request->param('action') == 'authorize') {
+        if ($this->request->getParam('action') == 'authorize') {
             // OAuth spec requires to check OAuth authorize params as a first thing, regardless of whether user is logged in or not.
             // AuthComponent checks user after beforeFilter by default, this is the place to do it.
             try {
@@ -73,8 +73,8 @@ class OAuthController extends AppController
     {
         $this->redirect([
             'action' => 'authorize',
-            '_ext' => $this->request->param('_ext'),
-            '?' => $this->request->query
+            '_ext' => $this->request->getParam('_ext'),
+            '?' => $this->request->getQuery()
         ], 301);
     }
 
@@ -84,8 +84,8 @@ class OAuthController extends AppController
      */
     public function authorize()
     {
-        $clientId = $this->request->query('client_id');
-        $ownerModel = $this->Auth->config('authenticate.all.userModel');
+        $clientId = $this->request->getQuery('client_id');
+        $ownerModel = $this->Auth->getConfig('authenticate.all.userModel');
         $ownerId = $this->Auth->user(Configure::read("OAuthServer.models.{$ownerModel}.id") ?: 'id');
 
         $event = new Event('OAuthServer.beforeAuthorize', $this);
@@ -116,7 +116,7 @@ class OAuthController extends AppController
             })
             ->count();
 
-        if ($currentTokens > 0 || ($this->request->is('post') && $this->request->data('authorization') === 'Approve')) {
+        if ($currentTokens > 0 || ($this->request->is('post') && $this->request->getData('authorization') === 'Approve')) {
             $redirectUri = $this->authCodeGrant->newAuthorizeRequest($ownerModel, $ownerId, $this->authParams);
 
             $event = new Event('OAuthServer.afterAuthorize', $this);

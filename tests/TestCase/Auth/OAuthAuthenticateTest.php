@@ -2,8 +2,8 @@
 namespace OAuthServer\Test\TestCase\Auth;
 
 use Cake\Controller\ComponentRegistry;
-use Cake\Network\Request;
-use Cake\Network\Response;
+use Cake\Http\Response;
+use Cake\Http\ServerRequest;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use OAuthServer\Auth\OAuthAuthenticate;
@@ -29,8 +29,8 @@ class OAuthAuthenticateTest extends TestCase
 
     public function testAuthenticate()
     {
-        $request = new Request('posts/index');
-        $request->data = [];
+        $request = new ServerRequest('posts/index');
+//        $request->data = [];
         $this->assertFalse($this->auth->authenticate($request, $this->response));
     }
 }

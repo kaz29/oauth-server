@@ -6,20 +6,23 @@ use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
-use Cake\TestSuite\IntegrationTestCase;
+use Cake\TestSuite\IntegrationTestTrait;
+use Cake\TestSuite\TestCase;
 use OAuthServer\Controller\OAuthController;
 use TestApp\Controller\TestAppController;
 
-class OAuthControllerTest extends IntegrationTestCase
+class OAuthControllerTest extends TestCase
 {
+    use IntegrationTestTrait;
+
     public $fixtures = [
-        'plugin.o_auth_server.clients',
-        'plugin.o_auth_server.scopes',
-        'plugin.o_auth_server.access_tokens',
-        'plugin.o_auth_server.sessions',
-        'plugin.o_auth_server.session_scopes',
-        'plugin.o_auth_server.auth_codes',
-        'plugin.o_auth_server.auth_code_scopes',
+        'plugin.OAuthServer.Clients',
+        'plugin.OAuthServer.Scopes',
+        'plugin.OAuthServer.AccessTokens',
+        'plugin.OAuthServer.Sessions',
+        'plugin.OAuthServer.SessionScopes',
+        'plugin.OAuthServer.AuthCodes',
+        'plugin.OAuthServer.AuthCodeScopes',
     ];
 
     public function setUp()
@@ -33,12 +36,6 @@ class OAuthControllerTest extends IntegrationTestCase
         Router::plugin('OAuthServer', function (RouteBuilder $routes) {
             $routes->connect('/login', ['controller' => 'Users', 'action' => 'login']);
         });
-    }
-
-    public function testInstanceOfClassFromConfig()
-    {
-        $controller = new OAuthController();
-        $this->assertInstanceOf(TestAppController::class, $controller);
     }
 
     public function testOauthRedirectsToAuthorize()
